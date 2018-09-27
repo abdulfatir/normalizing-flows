@@ -31,7 +31,13 @@ Now, using the matrix determinant lemma
 \end{align*}
 where $h(\alpha,r) = (\alpha + r)^{-1}$ and $r = ||\mathbf{z}-\mathbf{z}_0||$.
 \begin{align*}
-\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \mathbf{I} + \beta\left(h'(\alpha,r)\frac{\partial r}{\partial \mathbf{z}}(\mathbf{z}-\mathbf{z}_0) + h(\alpha,r)\mathbf{I}\right)\\
-&=(1+\beta h(\alpha,r))\mathbf{I} + h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}(\mathbf{z}-\mathbf{z}_0)
+\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \mathbf{I} + \beta\left((\mathbf{z}-\mathbf{z}_0)h'(\alpha,r)\frac{\partial r}{\partial \mathbf{z}} + h(\alpha,r)\mathbf{I}\right)\\
+&=(1+\beta h(\alpha,r))\mathbf{I} + \beta h'(\alpha,r)(\mathbf{z}-\mathbf{z}_0)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}
+\end{align*}
+Again, using the matrix determinant lemma
+\begin{align*}
+\det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \left(1 + \beta h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}\frac{\mathbf{I}}{(1+\beta h(\alpha,r))}(\mathbf{z}-\mathbf{z}_0)\right)\det((1+\beta h(\alpha,r))\mathbf{I})\\
+&=\left(\frac{1 + \beta h(\alpha,r) + \beta h'(\alpha,r)||\mathbf{z}-\mathbf{z}_0||}{(1+\beta h(\alpha,r))}\right)(1+\beta h(\alpha,r))^d\\
+&=\left(1 + \beta h(\alpha,r) + \beta h'(\alpha,r)r\right)(1+\beta h(\alpha,r))^{d-1}\\
 \end{align*}
 \end{document}
