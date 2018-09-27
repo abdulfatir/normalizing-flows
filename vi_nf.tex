@@ -1,0 +1,37 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+%opening
+\title{Normalizing Flows}
+\author{Abdul Fatir}
+\date{}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Notes on normalizing flows.
+\end{abstract}
+
+\section{Planar Flow}
+\begin{align*}
+	f(\mathbf{z}) = \mathbf{z} + \mathbf{u}h(\mathbf{w}^\top\mathbf{z} + b)
+\end{align*}
+\begin{align*}
+	\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} = \mathbf{I} + \mathbf{u}h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top
+\end{align*}
+Now, using the matrix determinant lemma
+\begin{align*}
+\det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= (1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{I}^{-1}\mathbf{u})\det(\mathbf{I})\\
+&=(1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{u})
+\end{align*}
+\section{Radial Flow}
+\begin{align*}
+	f(\mathbf{z}) = \mathbf{z} + \beta h(\alpha,r)(\mathbf{z}-\mathbf{z}_0)
+\end{align*}
+where $h(\alpha,r) = (\alpha + r)^{-1}$ and $r = ||\mathbf{z}-\mathbf{z}_0||$.
+\begin{align*}
+\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \mathbf{I} + \beta\left(h'(\alpha,r)\frac{\partial r}{\partial \mathbf{z}}(\mathbf{z}-\mathbf{z}_0) + h(\alpha,r)\mathbf{I}\right)\\
+&=(1+\beta h(\alpha,r))\mathbf{I} + h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}(\mathbf{z}-\mathbf{z}_0)
+\end{align*}
+\end{document}
