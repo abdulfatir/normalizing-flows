@@ -1,6 +1,9 @@
 \documentclass[]{article}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subfig}
+\graphicspath{{./imgs/}}
 %opening
 \title{Normalizing Flows}
 \author{Abdul Fatir}
@@ -45,6 +48,7 @@ The method described above can be extended to multivariate distributions $q_0(\m
 
 \begin{align}
 q_1(\mathbf{y}) = q_0(\mathbf{z})\left|\det \frac{\partial f^{-1}}{\partial \mathbf{y}}\right| = q_0(\mathbf{z})\left|\det \frac{\partial f}{\partial \mathbf{z}}\right|^{-1}
+\label{eq:cov}
 \end{align}
 
 where the second equality comes from the inverse-function theorem.
@@ -52,30 +56,123 @@ where the second equality comes from the inverse-function theorem.
 Rezende et. al. proposed two different families of invertible transformations: planar flow and radial flow.
 
 \section{Planar Flow}
+
+Planar flows use functions of form
+
+
+\begin{align}
+f(\mathbf{z}) = \mathbf{z} + \mathbf{u}h(\mathbf{w}^\top\mathbf{z} + b)
+\label{eq:planarfn}
+\end{align}
+
+
+where $\mathbf{u},\mathbf{w}\in \mathbb{R}^d$, $b \in \mathbb{R}$, and $h$ is an element-wise non-linearity such as $\tanh$.
+
+The Jacobian is then given by
+
 \begin{align*}
-	f(\mathbf{z}) = \mathbf{z} + \mathbf{u}h(\mathbf{w}^\top\mathbf{z} + b)
+\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} = \mathbf{I} + \mathbf{u}h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top
 \end{align*}
-\begin{align*}
-	\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} = \mathbf{I} + \mathbf{u}h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top
-\end{align*}
+
 Now, using the matrix determinant lemma
-\begin{align*}
+
+\begin{align}
 \det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= (1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{I}^{-1}\mathbf{u})\det(\mathbf{I})\\
-&=(1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{u})
-\end{align*}
-\section{Radial Flow}
+&=(1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{u})\label{eq:planar-det}
+\end{align}
+
+
+\subsection{Example}
+
+Let's look at a specific example for $\mathbf{z}\in\mathbb{R}^2$. We will apply a planar flow to $\mathbf{z}$ to get $\mathbf{y} = f(\mathbf{z})$.
+
+
 \begin{align*}
-	f(\mathbf{z}) = \mathbf{z} + \beta h(\alpha,r)(\mathbf{z}-\mathbf{z}_0)
+q_0(\mathbf{z}) &= \mathcal{N}(\mathbf{z};\mathbf{0},\mathbf{I})\\
+\mathbf{w} &= \begin{bmatrix}5 & 0\end{bmatrix}^\top\\
+\mathbf{u} &= \begin{bmatrix}1 & 0\end{bmatrix}^\top\\
+b &= 0\\
+h(\mathbf{x}) &= \tanh(\mathbf{x})
 \end{align*}
-where $h(\alpha,r) = (\alpha + r)^{-1}$ and $r = ||\mathbf{z}-\mathbf{z}_0||$.
+
+The determinant of the Jacobian can be computed using Eq. ($\ref{eq:planar-det}$) and the analytic PDF $q_1(\mathbf{y})$ can then be computed using Eq. ($\ref{eq:cov}$). The effect of the flow on uniformly space points is shown in Figure \ref{fig:planar-points}. The analytic density $q_0(\mathbf{z})$ and the corresponding empirical density plotted as a 2D histogram of samples from $q_0(\mathbf{z})$ is shown in Figure \ref{fig:q0}. The analytic density $q_1(\mathbf{y})$ computed using Eq. ($\ref{eq:cov}$) and the corresponding empirical density plotted as a 2D histogram of variables $\mathbf{y}$ obtained by applying $f$ to samples from $q_0(\mathbf{z})$ is shown in Figure \ref{fig:q1-planar}.
+
+\begin{figure}
+		\centering
+	\includegraphics[width=0.6\textwidth]{planar-points}
+	\caption{Applying planar flow to uniformly spaced points}
+	\label{fig:planar-points}
+\end{figure}
+
+\begin{figure}
+		\centering
+	\subfloat{\includegraphics[width=0.3\textwidth]{planar-q0}}
+	\subfloat{\includegraphics[width=0.3\textwidth]{planar-q0-emp}}
+	\caption{Analytic and empirical density $q_0(\mathbf{z})$}
+	\label{fig:q0}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.3\textwidth]{planar-q1}}
+	\subfloat{\includegraphics[width=0.3\textwidth]{planar-q1-emp}}
+	\caption{Analytic and empirical density $q_1(\mathbf{y})$ after applying planar flow}
+	\label{fig:q1-planar}
+\end{figure}
+
+\section{Radial Flow}
+Radial flows use functions of the form
+
+\begin{align*}
+f(\mathbf{z}) = \mathbf{z} + \beta h(\alpha,r)(\mathbf{z}-\mathbf{z}_0)
+\label{eq:radialfn}
+\end{align*}
+
+where $\alpha \in \mathbb{R}^+$, $\beta \in \mathbb{R}$, $h(\alpha,r) = (\alpha + r)^{-1}$ and $r = \vert\vert\mathbf{z} - \mathbf{z}_0\vert\vert$.
+
+The Jacobian is then given by
+
 \begin{align*}
 \frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \mathbf{I} + \beta\left((\mathbf{z}-\mathbf{z}_0)h'(\alpha,r)\frac{\partial r}{\partial \mathbf{z}} + h(\alpha,r)\mathbf{I}\right)\\
 &=(1+\beta h(\alpha,r))\mathbf{I} + \beta h'(\alpha,r)(\mathbf{z}-\mathbf{z}_0)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}
 \end{align*}
-Again, using the matrix determinant lemma
-\begin{align*}
-\det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \left(1 + \beta h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}\frac{\mathbf{I}}{(1+\beta h(\alpha,r))}(\mathbf{z}-\mathbf{z}_0)\right)\det((1+\beta h(\alpha,r))\mathbf{I})\\
+
+
+Let $\gamma = (1+\beta h(\alpha,r))$. Again, using the matrix determinant lemma
+
+\begin{align}
+\det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \left(1 + \beta h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}\frac{\mathbf{I}}{\gamma}(\mathbf{z}-\mathbf{z}_0)\right)\det(\gamma\mathbf{I})\\
 &=\left(\frac{1 + \beta h(\alpha,r) + \beta h'(\alpha,r)||\mathbf{z}-\mathbf{z}_0||}{(1+\beta h(\alpha,r))}\right)(1+\beta h(\alpha,r))^d\\
-&=\left(1 + \beta h(\alpha,r) + \beta h'(\alpha,r)r\right)(1+\beta h(\alpha,r))^{d-1}\\
-\end{align*}
+&=\left(1 + \beta h(\alpha,r) + \beta h'(\alpha,r)r\right)(1+\beta h(\alpha,r))^{d-1}\label{eq:radial-det}
+\end{align}
+
+\subsection{Example}
+
+Let's look at a specific example for $\mathbf{z}\in\mathbb{R}^2$. We will apply a radial flow to $\mathbf{z}$ to get $\mathbf{y} = f(\mathbf{z})$.
+
+
+\begin{align}
+q_0(\mathbf{z}) &= \mathcal{N}(\mathbf{z};\mathbf{0},\mathbf{I})\\
+\mathbf{z}_0 &= \begin{bmatrix}1 & 0\end{bmatrix}^\top\\
+\alpha &= 2\\
+\beta &= 5
+\end{align}
+
+The determinant of the Jacobian can be computed using Eq. ($\ref{eq:radial-det}$) and the analytic PDF $q_1(\mathbf{y})$ can then be computed using Eq. ($\ref{eq:cov}$).  The effect of the flow on uniformly space points is shown in Figure \ref{fig:radial-points}. The analytic density $q_0(\mathbf{z})$ and the corresponding empirical density plotted as a 2D histogram of samples from $q_0(\mathbf{z})$ is shown in Figure \ref{fig:q0}. The analytic density $q_1(\mathbf{y})$ computed using Eq. ($\ref{eq:cov}$) and the corresponding empirical density plotted as a 2D histogram of variables $\mathbf{y}$ obtained by applying $f$ to samples from $q_0(\mathbf{z})$ is shown in Figure \ref{fig:q1-radial}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{radial-points}
+	\caption{Applying radial flow to uniformly spaced points}
+		\label{fig:radial-points}
+\end{figure}
+
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.3\textwidth]{radial-q1}}
+	\subfloat{\includegraphics[width=0.3\textwidth]{radial-q1-emp}}
+	\caption{Analytic and empirical density $q_1(\mathbf{y})$ after applying radial flow}
+		\label{fig:q1-radial}
+\end{figure}
+
 \end{document}
