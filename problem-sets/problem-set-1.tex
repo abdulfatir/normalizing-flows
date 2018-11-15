@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\allowdisplaybreaks
+\title{CS6202: Problem Set 1}
+\author{Abdul Fatir Ansari}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\noindent\emph{Question 1}
+\\[3pt]
+\textit{Inverse-transform sampling} is based on the probability integral transform which states the following---if $X$ is continuous random variable (RV) with the cumulative distribution function (CDF) $F_X$, then the random variable $Y$ has the uniform distribution on $[0,1]$. Verify this statement by an example in the context of normalizing flows (based on the slides on ``Transformation of a Random Variable'' from the presentation). Specifically, define a RV $X$ with probability density $p(x)$ and the smooth, invertible transformation function $f = F_X$. Derive the analytic density of $Y = f(X)$ and show that it is equal to $\mathcal{U}(0,1)$, either using the CDF technique or the general change-of-variable formula.  
+\\[10pt]
+\emph{Solution 1}
+\\[3pt]
+Let $p(x) = \lambda e^{-\lambda x}$ which is the exponential distribution where $\lambda > 0$ and support $x\in[0,\infty)$. The CDF of the exponential distribution is given by $F_X(x) = 1 - e^{-\lambda x}$. Define $f = F_X$. Now, if $Y = f(X)$, we can see that the support of $p(y)$ is $[0,1]$ by plugging in the support of $p(x)$ in $f$, i.e., $f(0) = 1 - e^{-\lambda 0} = 0$ and $\lim_{x\to\infty}1 - e^{-\lambda x} = 1$.
+
+Now, we show that the density function of $Y$ is 1, i.e., it's a uniform continuous distribution on $[0,1]$.
+\begin{itemize}
+    \item Using the CDF technique: 
+    \begin{align*}
+        F_{Y}(y) &= P(Y \leq y)\\
+        &= P(1 - e^{-\lambda X} \leq y)\\
+        &= P( e^{-\lambda X} \geq -y + 1)\\
+        &= P( -\lambda X \geq \log (1-y))\\
+        &= P\left(X \leq -\frac{\log (1-y)}{\lambda}\right)\\
+        &= F_X\left(-\frac{\log (1-y)}{\lambda}\right)\\
+    \end{align*}
+    Now, $p(y) = F_Y'(y)$
+    \begin{align*}
+        p(y) &= \frac{d}{dy}\left\{F_Y(y)\right\}\\
+        &= \frac{d}{dy}\left\{F_X\left(-\frac{\log (1-y)}{\lambda}\right)\right\}\\
+        &= \frac{d}{dy}\left\{\int_{0}^{-\frac{\log (1-y)}{\lambda}} \lambda e^{-\lambda x} dx\right\}\\
+        &= \frac{d}{dy}\left\{\left[ \frac{\lambda e^{-\lambda x}}{-\lambda} \right]_{0}^{-\frac{\log (1-y)}{\lambda}}\right\}\\
+        &= \frac{d}{dy}\left\{\left[ -e^{-\lambda\cdot-\frac{\log (1-y)}{\lambda}} - [-e^{-\lambda\cdot 0}] \right]\right\}\\
+        &= \frac{d}{dy}\left\{\left[ y-1 - [-1] \right]\right\} = \frac{d}{dy}\left\{y\right\} = 1\\
+    \end{align*}
+    \item Using change-of-variable formula:
+    
+    The change-of-variable formula says that
+    \begin{align*}
+        p(y) &= p(x)\left|\frac{df}{dx}\right|^{-1}\\
+        &= \lambda e^{-\lambda x}\left|\frac{d}{dx}\left\{1 - e^{-\lambda x}\right\}\right|^{-1}\\
+        &= \lambda e^{-\lambda x}\left|\lambda e^{-\lambda x}\right|^{-1}\\
+        &= \frac{\lambda e^{-\lambda x}}{\lambda e^{-\lambda x}} = 1
+    \end{align*}
+\end{itemize}
+
+\noindent\emph{Question 2}
+\\[3pt]
+The transformation $f(\mathbf{z}) = \mathbf{z} + \mathbf{u}h(\mathbf{w}^\top\mathbf{z} + b)$ used  in planar flows is not always invertible. What are the constraints on $\mathbf{u},\:\mathbf{w},\:\text{and}\:b$ (if any) for the invertiblity of the function? Derive the constraints for the case when $z, u, w \in\mathbb{R}$ and then extend to the case when $\mathbf{z}, \mathbf{u},\mathbf{w}\in\mathbb{R}^d$. Assume that the fuction $h$ is the logistic function $h(x) = \frac{1}{1+e^{-x}}$.
+\\[10pt]
+\emph{Solution 2}
+\\[3pt]
+When $z, u, w \in\mathbb{R}$, we have $f(z) = z + u\cdot h(wz + b)$. A sufficient condition for the invertibility of $f(z)$ is that it is an increasing function, i.e., $f'(z) > 0$.
+\begin{align*}
+    f'(z) &> 0\\
+    1 + uw\cdot h'(wz + b) &> 0\\
+    uw &> -\frac{1}{h'(wz + b)}
+\end{align*}
+The function $h'(x) = \frac{e^x}{(e^x+1)^2}$ takes its maximum value at $x=0$ which is $0.25$. Therefore, it is sufficient that $uw > -4$ for the function $f$ to be invertible.
+
+Let's extend this to the case when $\mathbf{z}, \mathbf{u},\mathbf{w}\in\mathbb{R}^d$. We begin by splitting $\mathbf{z}$ into two components $\mathbf{z}_\perp$ (perpendicular to $\mathbf{w}$) and $\mathbf{z}_\|$ (parallel to $\mathbf{w}$). Note that $\because\:\mathbf{z}_\|$ is parallel to $\mathbf{w}$, it can also be written as $\alpha\frac{\mathbf{w}}{\|\mathbf{w}\|^2}$. With this is mind,
+\begin{align}
+    f(\mathbf{z}) = \mathbf{z}_\perp + \mathbf{z}_\| + \mathbf{u}h(\mathbf{w}^\top\mathbf{z}_\| + b)
+    \label{eq:zdecomp}
+\end{align}
+
+Let $\mathbf{y}=f(\mathbf{z})$; now, $\mathbf{z}_\perp$ can be uniquely computed as follows (given that we have $\mathbf{z}_\|$)
+\begin{align}
+    \mathbf{z}_\perp = \mathbf{y} - \mathbf{z}_\| - \mathbf{u}h(\mathbf{w}^\top\mathbf{z}_\| + b)
+\end{align}
+
+Substituting $\mathbf{z}_\| = \alpha\frac{\mathbf{w}}{\|\mathbf{w}\|^2}$ in Eq. (\ref{eq:zdecomp})
+
+\begin{align}
+    f(\mathbf{z}) &= \mathbf{z}_\perp + \alpha\frac{\mathbf{w}}{\|\mathbf{w}\|^2} + \mathbf{u}h(\alpha + b)\\
+    \mathbf{w}^\top f(\mathbf{z}) &= \alpha + \mathbf{w}^\top\mathbf{u}h(\alpha + b)\qquad (\mbox{dot product with }\mathbf{w})\label{eq:alphainv}
+\end{align}
+
+We need to solve the scalar equation in Eq. (\ref{eq:alphainv}) to solve for $\alpha$. For a unique solution, the RHS of Eq. (\ref{eq:alphainv}) must be an increasing function, i.e.,
+\begin{align*}
+    1 + \mathbf{w}^\top\mathbf{u}h'(\alpha + b) &> 0\\
+    \mathbf{w}^\top\mathbf{u} &> -\frac{1}{h'(\alpha + b)}
+\end{align*}
+
+Again, as before, $\max h'(x) = 0.25$ at $x=0$. Therefore, it suffices that $\mathbf{w}^\top\mathbf{u}>-4$.
+
+\end{document}
