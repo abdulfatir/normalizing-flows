@@ -4,26 +4,6 @@
 *.aux
 *.gz
 .DS_Store
-
-
-Skip to content
- 
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- @remmyzen Sign out
-2,723
-75,178 35,565 github/gitignore
- Code  Pull requests 160  Projects 0  Insights
-gitignore/TeX.gitignore
-da37cec  6 days ago
-@cailloumajor cailloumajor [TeX] Ignore generated files by 'vhistory' package
-@maieul @koppor @shiftkey @arcresu @habi @lszeremeta @tjgrilley @seungwonpark @dopefishh @Konfekt @AndyHee @153957 @wojciechwasko @whisperity @BlueNalgene @thomaslima @thomwiggers @thiminhnhut @thilaire @rogierslag @ptigwe @orzechow @muzimuzhi @vkusvody @meneguzzi @masgo
-    
-260 lines (203 sloc)  2.42 KB
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -283,3 +263,5 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+=======
+docs/_minted*
