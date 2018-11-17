@@ -3,9 +3,9 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{minted}
 \allowdisplaybreaks
 \title{CS6202: Problem Set 1}
-\author{Abdul Fatir Ansari}
 \date{}
 
 \begin{document}
@@ -14,7 +14,7 @@
 
 \noindent\emph{Question 1}
 \\[3pt]
-\textit{Inverse-transform sampling} is based on the probability integral transform which states the following---if $X$ is continuous random variable (RV) with the cumulative distribution function (CDF) $F_X$, then the random variable $Y$ has the uniform distribution on $[0,1]$. Verify this statement by an example in the context of normalizing flows (based on the slides on ``Transformation of a Random Variable'' from the presentation). Specifically, define a RV $X$ with probability density $p(x)$ and the smooth, invertible transformation function $f = F_X$. Derive the analytic density of $Y = f(X)$ and show that it is equal to $\mathcal{U}(0,1)$, either using the CDF technique or the general change-of-variable formula.  
+\textit{Inverse-transform sampling} is based on the probability integral transform which states the following---if $X$ is continuous random variable (RV) with the cumulative distribution function (CDF) $F_X$, then the random variable $Y$ has the uniform distribution on $[0,1]$. Verify this statement by giving an example in the context of normalizing flows (based on the slides on ``Transformation of a Random Variable'' from the presentation). Specifically, define a RV $X$ with probability density $p(x)$ and the smooth, invertible transformation function $f = F_X$. Derive the analytic density of $Y = f(X)$ and show that it is equal to $\mathcal{U}(0,1)$, either using the CDF technique or the general change-of-variable formula.  
 \\[10pt]
 \emph{Solution 1}
 \\[3pt]
@@ -90,5 +90,32 @@ We need to solve the scalar equation in Eq. (\ref{eq:alphainv}) to solve for $\a
 \end{align*}
 
 Again, as before, $\max h'(x) = 0.25$ at $x=0$. Therefore, it suffices that $\mathbf{w}^\top\mathbf{u}>-4$.
+\\[10pt]
+\noindent\emph{Question 3}
+\\[3pt]
+Implement a \texttt{Bijector} in Tensorflow Probability for the sigmoid activation function.
+\begin{align*}
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\end{align*}
+\\[10pt]
+\emph{Solution 3}
+\\[3pt]
+Forward function: 
+\begin{align*}
+y = \frac{1}{1 + e^{-x}}
+\end{align*}
+
+\noindent Inverse function:
+\begin{align*}
+x = -\log\left(\frac{1}{y} - 1\right)
+\end{align*}
+
+\noindent Inverse Jacobian's diagonal element:
+
+\begin{align*}
+\frac{\partial \sigma^{-1}}{\partial y}\Bigg|_{ii} = \frac{1}{y_i - y_i^2}
+\end{align*}
+
+\inputminted[linenos=true,frame=lines,framesep=2mm]{python}{sigmoid.py}
 
 \end{document}
