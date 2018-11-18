@@ -41,10 +41,22 @@ We use $\sigma_{t,i} =  \sigma_i(\mathbf{z}_{t})$ to make the notation of dimens
 
 \noindent\emph{Question 2}
 \\[3pt]
-asd
+In practical applications of normalizing flows, present networks are tending to get deeper, i.e, more stacked layers. This induces numerical stability issues. One of the ways to address this is by adding \textit{Batch-normalization} layers. The forward pass of a typical batch-normalization layer is as follows:
+\begin{align}
+y \mapsto \frac{x - \tilde{\mu}}{\sqrt{\tilde{\sigma}^{2} + \epsilon}}
+\end{align}
+Derive the log determinant of the Jacobian for this transformation.
 \\[10pt]
 \emph{Solution 2}
 \\[3pt]
+The log determinant of the Jacobian: $\log\left| \det\frac{\partial y}{\partial x} \right|$, can be calculated as follows:
+
+\begin{align*}
+\log\left| \det\frac{\partial y}{\partial x} \right| &= \log\left| \det\frac{\partial }{\partial x}\left(\frac{x - \tilde{\mu}}{\sqrt{\tilde{\sigma}^{2} + \epsilon}}\right) \right| \\
+&= \log\left| \det \left( \frac{\partial }{\partial x}\left(\frac{x }{\sqrt{\tilde{\sigma}^{2} + \epsilon}}\right) - \frac{\partial }{\partial x}\left(\frac{\tilde{\mu} }{\sqrt{\tilde{\sigma}^{2} + \epsilon}}\right) \right) \right| \\
+&= \log\left| \det \left( \frac{1}{\sqrt{\tilde{\sigma}^{2} + \epsilon}} \right) \right| \\
+&= \sum_{i}\log \left| \frac{1}{\sqrt{\tilde{\sigma}_{i}^{2} + \epsilon}}  \right| \\
+\end{align*}
 
 
 \end{document}

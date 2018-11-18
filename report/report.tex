@@ -336,6 +336,8 @@ All of the additions mentioned before can be inverted and log-determinant of the
 \section{Conclusion}
 In this project, we have discussed how to transform a simple base distribution into a complex distribution by applying a series of invertible transformations called normalizing flows. We also discussed how normalizing flows can be applied to various representation learning regimes. Firstly, normalizing flows can be used for richer latent-posterior proposals for inference in the Variational Autoencoder. We discussed Planar and Radial Flows~\cite{rezende2015variational}, Inverse Autoregressive Flow~\cite{kingma2016improved}, and Sylvester Normalizing Flow~\cite{van2018sylvester} in this regime.  Secondly, normalizing flows can be used to estimate density when the exact likelihood is not known. We discussed NICE~\cite{dinh2014nice}, RealNVP~\cite{dinh2016density}, and Masked Autoregressive Flow~\cite{papamakarios2017masked} in this regime. We also discussed how normalizing flows can be implemented in deep probabilistic programming languages specifically Tensorflow Probability. Finally, we discussed several recent advances in normalizing flows used for image and audio generation.
 
+In present day trends, applications of normalizing flows are being heavily used in methods involving variation inference. These are scalable methods which provide robust generative solutions. In contrast, auto-regressive methods suffer from slow sampling as the forward calculation of an autoregressive flow is not parallelizable. Density estimation methods ameliorate problems present in the mentioned methods, however their popularity remains constrained for historical reasons. Nevertheless, benchmark performance by models such as Glow seem to reverse this trend. From the PPL perspective, Tensorflow Probability provides the highest range of bijector families, thus making it the ideal choice for flow-based implementations. 
+
 %
 % ---- Bibliography ----
 %
@@ -377,8 +379,9 @@ In this project, we have discussed how to transform a simple base distribution i
 		\item Normalizing Flows for Density Estimation 
 		\item Non-linear Independent Components Estimation
 		\item Real-valued Non-Volume Preserving
-		\item Appendix: Jacobian calculation and discussion.
 	\end{itemize}
+	\item Conclusion
+    \item Appendix: Jacobian for affine transformation and discussion.
 \end{enumerate}
 
 
