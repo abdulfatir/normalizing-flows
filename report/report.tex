@@ -209,7 +209,9 @@ where $\bm{\mu}$ and $\bm{\sigma}$ learnt from an Autoregressive neural network 
 \subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
 
 \section{Normalizing Flows in Probabilistic Programming Languages}
-~\cite{dillon2017tensorflow}
+Normalizing flows has been implemented in mainstream probabilistic programming languages that is based on mainstream deep learning framework such as Pyro (based on Pytorch) and Tensorflow Probability (TFP, based on Tensorflow). They provide a construct called the \texttt{Bijector} for the implementation of a function in normalizing flow. We can create our own normalizing function by extending the \texttt{Bijector} construct. TFP also provides a construct called the \texttt{TransformedDistribution} which takes two input a \texttt{Bijector} and the base distribution. \texttt{TransformedDistribution} will run the flow and transform the given base distribution with the given \texttt{Bijector}. There are already numerous function (e.g. Affine, Sigmoid, RealNVP) implemented as a \texttt{Bijector} in TFP. The complete documentation of normalizing flows in TFP is given in this reference~\cite{dillon2017tensorflow}.
+
+To create your own function, you need to extend the \texttt{Bijector} construct and overload these three methods. First, the \texttt{\_forward} function receives samples $x$ from the base distribution as an input and calculate the value of the function $y = f(x)$. Second,  the \texttt{\_inverse} function areceives $y$ from our function as the input nd output $x$ corresponds to the inverse of the function $x = f^{-1}(y)$. Third, the \texttt{\_inverse\_log\_det\_jacobian} function receives $y$ from our function as the input and calculate the inverse log-determinant of the Jacobian $\log \det \left|\frac{\partial f^{-1}}{\partial y}\right|$. After you implement your own function, you can create a list of bijectors corresponds to the flow. TFP provides another bijector called \texttt{Chain} that will chain your list of bijectors into a flow. You can then create an instance of \texttt{TransformedDistribution} with this chain and your base distributor.   
 
 \section{Recent Advances}
 In this section, we discuss several recent works that used normalizing flows. We only explain the high-level concept of each work. Interested reader should refer to the original paper given in the reference.
@@ -272,7 +274,7 @@ All of the additions mentioned before can be inverted and log-determinant of the
 \begin{enumerate}
 	\item Inverse autoregressive flows subsection.
 	\item Recent advances section.
-	\item 
+	\item Normalizing flows in PPL.
 \end{enumerate}
 
 \section{Appendix (Abdul Fatir Ansari)}
