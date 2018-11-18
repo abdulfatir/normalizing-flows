@@ -204,6 +204,11 @@ Kingma et.al.~\cite{kingma2016improved} proposed a more stable update based on L
 where $\bm{\mu}$ and $\bm{\sigma}$ learnt from an Autoregressive neural network given in~\cite{germain2015made} receiving input $\mathbf{z}$ and $\mathbf{h}$ from the VAE. 
 
 \subsection{Density Estimation}
+Density Estimation techniques take a different approach from Variational Inference (VI) methods to model the complex data distribution. Unlike VI, these methods aim for exact inference, sampling and log-likelihood evaluation. The primary goal in this regime is to find a bijective function $h=f(x)\;,x \in \mathcal{X}$ to map complex data-distribution $p_X(x)$ to density $p_H(f(x))$. Given that $p_H()$ has a simpler density whose likelihood function is analytically known, the overall log-likelihood of the data can be easily calculated. The complex log-likelihood of the data can now be calculated using the change of variables as follows:
+\begin{align}
+\log(p_X(x)) = \log(p_H(f(x))) +
+\log(\lvert \det(\frac{\partial f(x)}{\partial x}) \rvert)
+\end{align}
 
 \subsubsection{Non-linear Independent Components Estimation}
 \subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
