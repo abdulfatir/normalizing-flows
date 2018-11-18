@@ -222,7 +222,6 @@ where $f(x) = (f_{d}(x))_{d \leq D}$.
 This work targets invertible functions whose Jacobians have triangular structure so that calculating the determinant is tractable. In particular, it proposes the family of \textit{coupling layers} that we define below.
 
 \paragraph{Coupling layer:} The coupling layer serves a building block of the transformation proposed in this work. The general coupling layer comprises of two partitions $I_{1}, I_{2}$ of the input dimensions  $\left[ 1, D \right]$, such that $d = \lvert I_{1} \rvert$. The transformation is then defined as:
-
 \begin{align}
 y_{I_{1}} &= x_{I_{1}} \\
 y_{I_{2}} &= g(x_{I_{2}} ; m(x_{I_{1}}))
@@ -240,12 +239,9 @@ I_{d} & 0 \\
 \end{align*}
 Where $I_{d}$ is the identity matrix of size $d$. That means that
 $\det \frac{\partial y}{\partial x} = \det \frac{\partial y_{I_{2}}}{\partial x_{I_{2}}}$ which evaluates to $1$. 
-The inverse of this transformation can be expressed as:
-\begin{align*}
-x_{I_{1}} &= y_{I_{1}} \\
-x_{I_{2}} &= g^{-1}(y_{I_{2}} ; m(y_{I_{1}}))
-\end{align*}
-It is important to notice that the inverse of coupling function $m()$ is not required, thus allowing it to be modeled as complex non-linear functions. 
+The inverse of this transformation can be expressed as $x_{I_{1}} = y_{I_{1}}$ and $x_{I_{2}} = g^{-1}(y_{I_{2}} ; m(y_{I_{1}}))$:
+
+It is important to notice that the inverse of coupling function $m()$ is not required, thus allowing it to be modeled as complex non-linear functions.
  
 \subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
 
