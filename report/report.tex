@@ -241,12 +241,20 @@ Where $I_{d}$ is the identity matrix of size $d$. That means that
 $\det \frac{\partial y}{\partial x} = \det \frac{\partial y_{I_{2}}}{\partial x_{I_{2}}}$ which evaluates to $1$. 
 The inverse of this transformation can be expressed as $x_{I_{1}} = y_{I_{1}}$ and $x_{I_{2}} = g^{-1}(y_{I_{2}} ; m(y_{I_{1}}))$:
 
-It is important to notice that the inverse of coupling function $m()$ is not required, thus allowing it to be modeled as complex non-linear functions. NICE adopts an \textit{additive coupling law} which defines the function $g()$ as $g(a,b)\,=\,a+b$. Also, reLU is chosen as the coupling function $m()$.
+It is important to notice that the inverse of coupling function $m(.)$ is not required, thus allowing it to be modeled as complex non-linear functions. NICE adopts an \textit{additive coupling law} which defines the function $g(.)$ as $g(a,b)\,=\,a+b$. Also, reLU is chosen as the coupling function $m(.)$.
 
 A single coupling layer leaves part of the input unchanged. This is problematic, since modification of every dimension is desired. To achieve this, roles of partitions are interachanged in arjacent layers to ensure proper mixing. 
  
 \subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
+This subsequent work (RealNVP) \cite{dinh2016density} is an extension to the previous work (NICE) to enable multi-scalable architecture. The model uses \textit{affine coupling law} as its primary constituent. This is defined as:
+\begin{align}
+y_{1:d} &= x_{1:d}\\
+y_{d+1:D} &= x_{d+1:D} \odot \exp\big(s(x_{1:d})\big) + t(x_{1:d})
+,
+\end{align}
+where $I_1 = [1,d]$ and $I_2 = [(d+1),D]$. Also, $\exp(s(.))$ represents the \textit{scale} and $t(.)$ represents the \textit{shift} operation respectively. The Jacobian of this transformation is also a triangular matrix (derivation has been provided in appendix).
 
+Apart from the affine transformation, the model also proposes partitioning schemes across channels of input images and checkerboard pattern-based partitioning for exploiting pixel correlations. Further, to enable deep networks, the work proposes using techiniques such as Gaussianization and invertible \textit{batch-normalization}. It achieves to get competitive scores against state-of-the variants, with some advantages that are discussed in the appendix.
 
 \section{Normalizing Flows in Probabilistic Programming Languages}
 Normalizing flows has been implemented in mainstream probabilistic programming languages that is based on mainstream deep learning framework such as Pyro (based on Pytorch) and Tensorflow Probability (TFP, based on Tensorflow). They provide a construct called the \texttt{Bijector} for the implementation of a function in normalizing flow. We can create our own normalizing function by extending the \texttt{Bijector} construct. TFP also provides a construct called the \texttt{TransformedDistribution} which takes two input a \texttt{Bijector} and the base distribution. \texttt{TransformedDistribution} will run the flow and transform the given base distribution with the given \texttt{Bijector}. There are already numerous function (e.g. Affine, Sigmoid, RealNVP) implemented as a \texttt{Bijector} in TFP. The complete documentation of normalizing flows in TFP is given in this reference~\cite{dillon2017tensorflow}.
@@ -334,6 +342,9 @@ Now, using the matrix determinant lemma
 \end{align}
 
 \section{Appendix (Devamanyu Hazarika)}
+
+First, let us derive the Jacobian for the affine coupling law defined in RealNVP:
+
 \section{Appendix (Remmy Zen)}
 
 \end{document}
