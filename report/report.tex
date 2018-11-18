@@ -11,6 +11,7 @@
 \usepackage{amsfonts}
 \usepackage{subfig}
 \usepackage{cleveref}
+\usepackage[htt]{hyphenat}
 \graphicspath{{./imgs/}}
 
 \begin{document}
@@ -125,7 +126,7 @@ where $q(\mathbf{z}_0|\mathbf{x})$ is the simple initial density. Plugging in Eq
 \begin{align}
 \mathcal{L} &= \mathbb{E}_{q_0(\mathbf{z_0}|\mathbf{x})}\left[\log p(\mathbf{x},\mathbf{z}_K) - \log q_0(\mathbf{z}_0|\mathbf{x}) + \sum_{k=1}^K\log\left|\det \frac{\partial f_k}{\partial \mathbf{z}_{k-1}}\right| \right]
 \end{align}
-\subsubsection{Planar and Radial Flows} 
+\subsubsection{Planar and Radial Flow} 
 Planar and Radial Flows \cite{rezende2015variational} are one of the earliest flows proposed in the context of variational inference. Planar flows apply transformations perpendicular to a plane while radial flows apply them around a point. 
 
 Planar flows use functions of the form
@@ -167,7 +168,7 @@ For a detailed derivation of Jacobians of Planar and Radial flows please refer A
 	\label{fig:planarradial}
 \end{figure}
 
-\subsubsection{Inverse Autoregressive Flows} Planar and radial flows provide a simple invertible transformation shown to be effective in a low-dimensional latent spaces (up to hundred dimensions). The transformation in planar flows (Eq. \ref{eq:planarfn}) can be seen as a Multilayer Perceptron (MLP) with a single-unit bottleneck hidden layer with a skip connection. Since a single-unit hidden layer isn't very expressive, a long chain of transformations is needed to model a high-dimensional distribution. 
+\subsubsection{Inverse Autoregressive Flow} Planar and radial flows provide a simple invertible transformation shown to be effective in a low-dimensional latent spaces (up to hundred dimensions). The transformation in planar flows (Eq. \ref{eq:planarfn}) can be seen as a Multilayer Perceptron (MLP) with a single-unit bottleneck hidden layer with a skip connection. Since a single-unit hidden layer isn't very expressive, a long chain of transformations is needed to model a high-dimensional distribution. 
 
 Autoregressive flows~\cite{germain2015made} is a normalizing flow that scales to high-dimensional latent space by exploiting the ordering f the variables. In autoregressive flow, given a sequence of variable $\mathbf{y} = {y_i}_{i=0}^D$, each variable is only dependent only on variables from the previous index. The distribution is then given by
 \begin{align}
@@ -176,8 +177,8 @@ p(\mathbf{y}) = \prod_{i=0}^{D} p(x_i | x_0,\dots,x_{i-1})
 
 Kingma et. al.~\cite{kingma2016improved} proposed a Gaussian version of an autoregressive flow on a noise vector $\mathbf{\epsilon} \sim \mathcal{N}(0,\mathbf{I})$ given as follow:
 \begin{align}
-y_0 &= \mu_0 + \sigma_0 \epsilon_0\\
-y_i &= \mu_i(\mathbf{y}_{0:i-1}) + \sigma(\mathbf{y}_{0:i-1}) \epsilon_i\\
+y_0 &= \mu_0 + \sigma_0 \epsilon_0\label{eq:iaffn1}\\
+y_i &= \mu_i(\mathbf{y}_{0:i-1}) + \sigma(\mathbf{y}_{0:i-1}) \epsilon_i\label{eq:iaffn2}
 \end{align} 
 
 This flow is invertible and the noise $\epsilon$ is given by:
@@ -213,15 +214,12 @@ The flow consists of a chain of $T$ following transformations:
 
 Kingma et.al.~\cite{kingma2016improved} proposed a more stable update based on LSTM-type update. LSTM is a type of recurrent neural network that applies autoregressive technique to the neural network.  The update is given as follows:
 \begin{align}
-\mathbf{s}_t &= 1 / \sigma_t\\
-\mathbf{m}_t &= -\mu_t / \sigma_t\\
-\sigma_t &= sigmoid(\mathbf{s}_t)\\
-\mathbf{z}_t &= \sigma_t\mathbf{z}_{t-1} + (1 - \sigma_t)\mathbf{m}_{t} 
+\mathbf{s}_t = 1 / \sigma_t\:\text{and}\:\mathbf{m}_t = -\mu_t / \sigma_t\:\text{and}\:\sigma_t = \frac{1}{1 + e^{-\mathbf{s}_t}}\:\text{and}\:\mathbf{z}_t = \sigma_t\mathbf{z}_{t-1} + (1 - \sigma_t)\mathbf{m}_{t} 
 \end{align}
 
 where $\bm{\mu}$ and $\bm{\sigma}$ learnt from an Autoregressive neural network given in~\cite{germain2015made} receiving input $\mathbf{z}$ and $\mathbf{h}$ from the VAE. 
 
-\subsubsection{Sylvester Normalizing Flows} As explained earlier, planar flows suffer from the single-unit bottleneck problem. Sylvester Normalizing Flows (SNF)~\cite{van2018sylvester} attempt to solve this problem by modifying the transformation function which then behaves as an MLP with $M$ units instead of 1. SNF uses a transformation function of the following form 
+\subsubsection{Sylvester Normalizing Flow} As explained earlier, planar flows suffer from the single-unit bottleneck problem. Sylvester Normalizing Flows (SNF)~\cite{van2018sylvester} attempt to solve this problem by modifying the transformation function which then behaves as an MLP with $M$ units instead of 1. SNF uses a transformation function of the following form 
 \begin{align}
 f(\mathbf{z}) = \mathbf{z} + \mathbf{A}h(\mathbf{B}\mathbf{z} + \mathbf{b})
 \label{eq:sylfn}
@@ -288,10 +286,25 @@ where $I_1 = [1,d]$ and $I_2 = [(d+1),D]$. Also, $\exp(s(.))$ represents the \te
 
 Apart from the affine transformation, the model also proposes partitioning schemes across channels of input images and checkerboard pattern-based partitioning for exploiting pixel correlations. Further, to enable deep networks, the work proposes using techiniques such as Gaussianization and invertible \textit{batch-normalization}. It achieves to get competitive scores against state-of-the variants, with some advantages that are discussed in the appendix.
 
-\section{Normalizing Flows in Probabilistic Programming Languages}
-Normalizing flows has been implemented in mainstream probabilistic programming languages that is based on mainstream deep learning framework such as Pyro (based on Pytorch) and Tensorflow Probability (TFP, based on Tensorflow). They provide a construct called the \texttt{Bijector} for the implementation of a function in normalizing flow. We can create our own normalizing function by extending the \texttt{Bijector} construct. TFP also provides a construct called the \texttt{TransformedDistribution} which takes two input a \texttt{Bijector} and the base distribution. \texttt{TransformedDistribution} will run the flow and transform the given base distribution with the given \texttt{Bijector}. There are already numerous function (e.g. Affine, Sigmoid, RealNVP) implemented as a \texttt{Bijector} in TFP. The complete documentation of normalizing flows in TFP is given in this reference~\cite{dillon2017tensorflow}.
+\subsubsection{Masked Autoregressive Flow} The section on Inverse Autoregressive Flow (IAF) has already described how Autoregressive models such as MADE~\cite{germain2015made} can be used as normalizing flows. Masked Autoregressive Flow (MAF)~\cite{papamakarios2017masked} use the transformation function in Eq. (\ref{eq:iaffn2}) contrary to IAF which uses the inverse function. Since the inverse function can be parallelized, MAF is suitable for computation of the density $p(\mathbf{x})$ of an externally provided data point $\mathbf{x}$. Sampling a new point from MAF requires $D$ sequential passes which cannot be parallelized and hence sampling is slow. However, in the case of IAF, as the inverse function is used, sampling is fast but density estimation is slow and required $D$ sequential passes.
 
-To create your own function, you need to extend the \texttt{Bijector} construct and overload these three methods. First, the \texttt{\_forward} function receives samples $x$ from the base distribution as an input and calculate the value of the function $y = f(x)$. Second,  the \texttt{\_inverse} function areceives $y$ from our function as the input nd output $x$ corresponds to the inverse of the function $x = f^{-1}(y)$. Third, the \texttt{\_inverse\_log\_det\_jacobian} function receives $y$ from our function as the input and calculate the inverse log-determinant of the Jacobian $\log \det \left|\frac{\partial f^{-1}}{\partial y}\right|$. After you implement your own function, you can create a list of bijectors corresponds to the flow. TFP provides another bijector called \texttt{Chain} that will chain your list of bijectors into a flow. You can then create an instance of \texttt{TransformedDistribution} with this chain and your base distributor.   
+\section{Normalizing Flows in Probabilistic Programming Languages}
+Normalizing flows have been implemented in two recent deep probabilistic programming languages Pyro (based on Pytorch) and Tensorflow Probability (TFP, based on Tensorflow). They provide a construct called the \texttt{Bijector} for the implementation of an invertible transformation required for construction of a normalizing flow. New transformation functions can be defined by extending the \texttt{Bijector} class. TFP also provides a construct called the \texttt{TransformedDistribution} which takes in a base distribution (which is generally a simple distribution) and a \texttt{Bijector}. A \texttt{TransformedDistribution} represents the distribution obtained after applying the \texttt{Bijector} on the base distribution. A number of functions commonly used in deep learning (e.g., Affine, Sigmoid, RealNVP) have been implemented as \texttt{Bijector}s in TFP. Another bijector called \texttt{Chain} is provided in TFP that converts a list of bijectors into a single bijector which represents a flow. The complete documentation of normalizing flows in TFP is given in~\cite{dillon2017tensorflow}.
+
+Defining a custom transformation requires extending the \texttt{Bijector} class and implementing three functions: 1) \texttt{\_forward} -- receives samples $x$ from the base distribution as an input, evaluates the function $y = f(x)$, and returns the variable $y$. 2) \texttt{\_inverse} -- receives $y$ as the input and output $x$ corresponds to the inverse of the function, i.e., $x = f^{-1}(y)$. 3) \texttt{\_inverse\_log\_det\_jacobian} -- receives $y$ as the input and computes the inverse log-determinant of the Jacobian, i.e., $\log \det \left|\frac{\partial f^{-1}}{\partial y}\right|$. 
+
+Let's define the three functions for an example function, the Parametrized ReLU (PReLU) function.
+\begin{align}
+y = f(x) &= \begin{cases}
+x\quad&\text{if } x \geq 0\\
+\alpha x\quad&\text{otherwise, where }\alpha\in [0, 1]
+\end{cases}\\
+x = f^{-1}(y) &= \begin{cases}
+y\quad&\text{if } y \geq 0\\
+\alpha^{-1} y\quad&\text{otherwise}
+\end{cases}
+\end{align}
+An example bijector implementation is given in the appendix.
 
 \section{Recent Advances}
 In this section, we discuss several recent works that used normalizing flows. We only explain the high-level concept of each work. Interested reader should refer to the original paper given in the reference.
@@ -338,10 +351,19 @@ All of the additions mentioned before can be inverted and log-determinant of the
 \appendix
 
 
-\section{Appendix (Contribution)}
+\section{Contribution}
 \subsection*{Abdul Fatir Ansari}
 \begin{enumerate}
-	\item 
+	\item Background (Autoencoder \& Variational Autoencoder)
+	\item Applications
+	\begin{itemize}
+		\item Variational Inference using Normalizing Flows (basics)
+		\item Planar and Radial Flow
+		\item Sylvester Normalizing Flow
+		\item Masked Autoregressive Flow
+	\end{itemize}
+	\item Normalizing flows in PPLs
+	\item Problem Set 1
 \end{enumerate}
 
 \subsection*{Devamanyu Hazarika}
@@ -352,25 +374,39 @@ All of the additions mentioned before can be inverted and log-determinant of the
 
 \subsection*{Remmy A. M. Zen}
 \begin{enumerate}
-	\item Inverse autoregressive flows subsection.
-	\item Recent advances section.
-	\item Normalizing flows in PPL.
+	\item Applications
+	\begin{itemize}
+		\item Inverse Autogregressive Flow
+	\end{itemize}
+	\item Normalizing flows in PPLs
+	\item Recent advances
 \end{enumerate}
 
 \section{Appendix (Abdul Fatir Ansari)}
 
+\subsection{Planar and Radial Flow Derivations}
 
-The Jacobian is then given by
-
+\paragraph{Planar Flow} Differentiating Eq. (\ref{eq:planarfn}), the Jacobian is given by
 \begin{align*}
 \frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} = \mathbf{I} + \mathbf{u}h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top
 \end{align*}
 
 Now, using the matrix determinant lemma
-
 \begin{align}
 \det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= (1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{I}^{-1}\mathbf{u})\det(\mathbf{I})\\
 &=(1 + h'(\mathbf{w}^\top\mathbf{z} + b)\mathbf{w}^\top\mathbf{u})\label{eq:planar-det}
+\end{align}
+\paragraph{Radial Flow} Differentiating Eq. (\ref{eq:radialfn}), the Jacobian is given by
+\begin{align*}
+\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \mathbf{I} + \beta\left((\mathbf{z}-\mathbf{z}_0)h'(\alpha,r)\frac{\partial r}{\partial \mathbf{z}} + h(\alpha,r)\mathbf{I}\right)\\
+&=(1+\beta h(\alpha,r))\mathbf{I} + \beta h'(\alpha,r)(\mathbf{z}-\mathbf{z}_0)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}
+\end{align*}
+
+Let $\gamma = (1+\beta h(\alpha,r))$. Using the matrix determinant lemma
+\begin{align}
+\det\frac{\partial f(\mathbf{z})}{\partial \mathbf{z}} &= \left(1 + \beta h'(\alpha,r)\frac{(\mathbf{z}-\mathbf{z}_0)^\top}{||\mathbf{z}-\mathbf{z}_0||}\frac{\mathbf{I}}{\gamma}(\mathbf{z}-\mathbf{z}_0)\right)\det(\gamma\mathbf{I})\\
+&=\left(\frac{1 + \beta h(\alpha,r) + \beta h'(\alpha,r)||\mathbf{z}-\mathbf{z}_0||}{(1+\beta h(\alpha,r))}\right)(1+\beta h(\alpha,r))^d\\
+&=\left(1 + \beta h(\alpha,r) + \beta h'(\alpha,r)r\right)(1+\beta h(\alpha,r))^{d-1}\label{eq:radial-det}
 \end{align}
 
 \section{Appendix (Devamanyu Hazarika)}
