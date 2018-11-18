@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\allowdisplaybreaks
+\title{CS6202: Problem Set 2}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\noindent\emph{Question 1}
+\\[3pt]
+Give and derive the formula for the probability density function of the last iterate of Inverse Autoregressive Flow (IAF) $\log q(\mathbf{z}_T | \mathbf{x})$ in Variational Autoencoder. Assume that our base distribution $q(\mathbf{z}_0 | \mathbf{x})$ is an isotropic Gaussian with parameter $\mu_0$ and $\sigma_0$. This is similar to proof the Equation 11 in Inverse Autoregressive Flow paper.
+\\[10pt]
+\emph{Solution 1}
+\\[3pt]
+Remember that in Normalizing Flows the probability density function of the final iterate is given as:
+\begin{align}
+	\log q(\mathbf{z}_T | \mathbf{x}) = \log q(\mathbf{z}_0 | \mathbf{x}) - \sum_{t=1}^{T} \log\det \left|\frac{d\mathbf{z}_t}{d\mathbf{z}_{t-1}}\right|
+\end{align}
+
+Knowing that the base distribution $\log q(\mathbf{z}_0 | \mathbf{x})$ is an isotropic Gaussian and log-determinant of the Jacobian in IAF is given as follow:
+\begin{align}
+\log\det \left|\frac{d\mathbf{z}_t}{d\mathbf{z}_{t-1}}\right| &= \sum_{i=1}^{D} -\log \sigma_i(\mathbf{z}_{t})\\
+&= \sum_{i=1}^{D} -\log \sigma_{t,i}
+\label{eq:logdet}
+\end{align}
+We use $\sigma_{t,i} =  \sigma_i(\mathbf{z}_{t})$ to make the notation of dimension $i$ of $\sigma$ at iteration $t$ shorter. We can compute the probability density function of the final iterate as:
+\begin{align*}
+\log q(\mathbf{z}_T | \mathbf{x}) &= \log q(\mathbf{z}_0 | \mathbf{x}) - \sum_{t=1}^{T} \log\det \left|\frac{d\mathbf{z}_t}{d\mathbf{z}_{t-1}}\right|\\
+ &= \sum_{i=1}^{D} \left(\log \left[\frac{1}{\sqrt{2\pi}\sigma_{0,i}}\right] - \frac{(\mathbf{z}_{0}-\mu_{0,i})^2}{2\sigma_{0,i}^2} \right) - \sum_{t=1}^{T} \log\det \left|\frac{d\mathbf{z}_t}{d\mathbf{z}_{t-1}}\right|		\text{\hspace{20pt}...log of isotropic Gaussian}\\
+ &= \sum_{i=1}^{D}\log \left[\frac{1}{\sqrt{2\pi}}\frac{1}{\sigma_{0,i}}\right] - \frac{(\mathbf{z}_{0}-\mu_{0,i})^2}{2\sigma_{0,i}^2} - \sum_{t=1}^{T} -\log \sigma_{t,i}            \text{\hspace{20pt}...applying Equation~\ref{eq:logdet} }\\
+ &= \sum_{i=1}^{D}- \frac{1}{2}\log(2\pi) - \log \sigma_{0,i} -  \frac{1}{2}  \epsilon_i^2 - \sum_{t=1}^{T} -\log \sigma_{t,i}            \text{\hspace{20pt}...by $\epsilon = \frac{\mathbf{z_0} - \mu(\mathbf{z_0})}{\sigma(\mathbf{z_0})}$}\\
+ &= -\sum_{i=1}^{D} \left( \frac{1}{2}\log(2\pi) + \frac{1}{2}  \epsilon_i^2 + \sum_{t=0}^{T} \log \sigma_{t,i} \right)           \text{\hspace{20pt}...merge the sum of $\sigma$ and take out negative. }\\
+\end{align*}
+\\[3pt]
+
+
+\noindent\emph{Question 2}
+\\[3pt]
+asd
+\\[10pt]
+\emph{Solution 2}
+\\[3pt]
+
+
+\end{document}
