@@ -20,11 +20,11 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{Abdul Fatir Ansari\inst{1} \and
-Devamanyu Hazarika\inst{1} \and
-Remmy A. M. Zen\inst{1}}
+\author{Abdul Fatir Ansari \and
+Devamanyu Hazarika\and
+Remmy A. M. Zen}
 %
-\authorrunning{CS6202 Project Report}
+\authorrunning{CS6202 Project Report - Normalizing Flows}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -112,6 +112,7 @@ where $q(\mathbf{z}_0|\mathbf{x})$ is the simple initial density. Plugging in Eq
 Planar and Radial Flows \cite{rezende2015variational} are one of the earliest flows proposed in the context of variational inference. 
 
 Planar flows use functions of the form
+
 \begin{align}
 f(\mathbf{z}) = \mathbf{z} + \mathbf{u}h(\mathbf{w}^\top\mathbf{z} + b)
 \label{eq:planarfn}
@@ -148,33 +149,95 @@ For a detailed derivation of Jacobians of Planar and Radial flows please refer A
 	\label{fig:planarradial}
 \end{figure}
 
-\subsubsection{Inverse Autoregressive Flows}
-~\cite{kingma2016improved}
+\subsubsection{Inverse Autoregressive Flows} Planar and radial flow provide a simple invertible transformation shown to be effective in a low-dimensional latent space (up to hundred dimensions). Equation~\ref{eq:planarfn} of Planar Flow can be seen as Multilayer Perceptron with a single unit bottleneck hidden layer. This means that a long chain of transformations is needed to model a high-dimensional function. 
 
+Autoregressive flows~\cite{germain2015made} is a normalizing flow that scales to high-dimensional latent space by exploiting the ordering f the variables. In autoregressive flow, given a sequence of variable $\mathbf{y} = {y_i}_{i=0}^D$, each variable is only dependent only on variables from the previous index. The distribution is then given by
+\begin{align}
+p(\mathbf{y}) = \prod_{i=0}^{D} p(x_i | x_0,\dots,x_{i-1})
+\end{align} 	 
+
+Kingma et. al.~\cite{kingma2016improved} proposed a Gaussian version of an autoregressive flow on a noise vector $\mathbf{\epsilon} \sim \mathcal{N}(0,\mathbf{I})$ given as follow:
+\begin{align}
+y_0 &= \mu_0 + \sigma_0 \epsilon_0\\
+y_i &= \mu_i(\mathbf{y}_{0:i-1}) + \sigma(\mathbf{y}_{0:i-1}) \epsilon_i\\
+\end{align} 
+
+This flow is invertible and the noise $\epsilon$ is given by:
+\begin{align}
+\epsilon_i &= \frac{y_i - \mu_i(\mathbf{y}_{0:i-1})}{\sigma(\mathbf{y}_{0:i-1})}
+\label{eq:iaf}
+\end{align} 
+
+Note that, $epsilon$ is independent to each other so the calculation of Equation~\ref{eq:iaf} can be vectorized as follow:
+\begin{align}
+\bm{\epsilon} &= \frac{\mathbf{y} - \bm{\mu}(\mathbf{y})}{\bm{\sigma}(\mathbf{y})}
+\end{align} 
+This enables an efficient computation with GPU. 
+
+Due to the autoregressive structure, the transformation has a lower triangular Jacobian where diagonal is $\sigma_i$. For calculation of normalizing flows, we are interested in log-determinant of the Jacobian which is just a product of the diagonal given as:
+\begin{align}
+\log \det \left| \frac{d\bm{\epsilon}}{d\mathbf{y}} \right| = \sum_{i=0}^{D} - \log \sigma_i(\mathbf{y})
+\end{align}
+
+To apply Inverse Autoregressive Flows (IAF) for variational inference in VAE, we add IAF transforms after the latent variables $\mathbf{z}$ and modify the likelihood to account for IAF transforms. Figure~\ref{fig:iaf} shows the process of applying IAF to Variational Autoencoder. 
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\textwidth]{imgs/iaf}
+	\caption{The process of Inverse Autoregressive Flows in Variational Autoencoder~\cite{kingma2016improved}.}
+	\label{fig:iaf}
+\end{figure}
+
+The flow consists of a chain of $T$ following transformations:
+\begin{align}
+\mathbf{z}_t = \bm{\mu}_t + \bm{\sigma}_t\mathbf{z}_{t-1}
+\end{align}
+
+Kingma et.al.~\cite{kingma2016improved} proposed a more stable update based on LSTM-type update. LSTM is a type of recurrent neural network that applies autoregressive technique to the neural network.  The update is given as follows:
+\begin{align}
+\mathbf{s}_t &= 1 / \sigma_t\\
+\mathbf{m}_t &= -\mu_t / \sigma_t\\
+\sigma_t &= sigmoid(\mathbf{s}_t)\\
+\mathbf{z}_t &= \sigma_t\mathbf{z}_{t-1} + (1 - \sigma_t)\mathbf{m}_{t} 
+\end{align}
+
+where $\bm{\mu}$ and $\bm{\sigma}$ learnt from an Autoregressive neural network given in~\cite{germain2015made} receiving input $\mathbf{z}$ and $\mathbf{h}$ from the VAE. 
 
 \subsection{Density Estimation}
 
 \subsubsection{Non-linear Independent Components Estimation}
-\subsubsection{Real-valued Non-Volume Preserving}
+\subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
 
 \section{Normalizing Flows in Probabilistic Programming Languages}
 ~\cite{dillon2017tensorflow}
 
 \section{Recent Advances}
+In this section, we discuss several recent works that used normalizing flows. We only explain the high-level concept of each work. Interested reader should refer to the original paper given in the reference.
 \subsection{Pixel Recurrent Neural Network}
-~\cite{oord2016pixel}
-\subsection{Wavenet}
-~\cite{van2016wavenet}
-\subsection{Glow}
-~\cite{kingma2018glow}
+Pixel Recurrent Neural Network (PixelRNN)~\cite{oord2016pixel} is an auto-regressive image generative model where the joint distribution over the image pixel is factorized into a product of conditional distribution. This means that the probability of pixel at position $i$ is given as: $p(x_i | x_1, \dots, x_{i-1})$ where $x_1, \dots, x_{i-1}$ is the previously generated pixels. This is a strong and counter-intuitive assumption for an image generation where pixel mostly conditioned on their neighbors. However, PixelRNN is proven to  work well for image completion and generation task. In image completion, the occluded pixel is generated by conditioned upon the non-occluded pixels.
 
+Oord et. al.~\cite{oord2016pixel} proposed three methods model an auto-regressive image generation.  First, Row LSTM 1D convolution is used to generate image row by row from top to bottom. However, Row LSTM cannot capture the whole previously generated pixels since there is a coarse-graining in the convolution method. Second, Bidirectional LSTM is used to capture all the generated pixels as the context. Every pixel is conditioned upon their neighboring pixels except the one that has not been generated. However, LSTM training is known to be expensive so the authors proposed another model based on CNN. Third, Pixel CNN used a masked convolution by setting the filter of the pixels that has not been generated as zero.
+
+% Each method is visualize in Figure~\ref{fig:pixelrnn}. 
+%\begin{figure}[htb]
+%	\centering
+%	\includegraphics[width=\textwidth]{imgs/pixelrnn}
+%	\caption{The process of Inverse Autoregressive Flows in Variational Autoencoder~\cite{kingma2016improved}.}
+%	\label{fig:pixelrnn}
+%\end{figure}
+
+\subsection{Wavenet}
+Wavenet~\cite{van2016wavenet} used the idea of Pixel CNN from~\cite{oord2016pixel} for raw audio generation. It used one-dimensional convolution Pixel CNN to generate raw audio. Wavenet has been proven to be the state-of-the-art model for text-to-speech model. Google Assistant in Android use wavenet to generate the audio of the assistant. 
+
+Similar to Pixel CNN, the joint probability of an input audio is modelled by a stack of causal convolutional layers. Causal convolution has similar idea to masked convolution by shifting the output of a normal convolution by a few timesteps so it does not violate the autoregressive requirement. One of the problems with causal convolution is that it requires deep layers to capture long range dependency. The authors proposed to use dilated convolution where the convolution filter is applied over an area larger than its length. This is done by skipping input values with a certain step. 
+
+\subsection{Glow}
+Glow~\cite{kingma2018glow} extended and simplified the NICE and RealNVP model explained in Section~\ref{sec:realnvp} with three main extensions. First, the authors used activation normalization (act-norm) instead of batch normalization in RealNVP.  Act-norm performs a channel-wise normalization and is faster than batch normalization. Second, the authors used $1\times1$ convolution for the channel-wise permutation. NICE and RealNVP proposed a flow containing the equivalent of a permutation that reverses the ordering of the channels. This is changed with a $1\times1$ convolution so that the permutation can be learned.  Third, they extend RealNVP so that it can work faster by changing it into a multi-scale architecture. The authors splitted each step of the flow so it can be parallelized.
+
+All of the additions mentioned before can be inverted and log-determinant of the Jacobian can be computed easily. Please refer to the paper for the details of the inversion and calculation of the Jacobian matrix. Glow has similar advantage as RealNVP that it can generate a high quality images. Moreover, the latent space learned by Glow is meaningful. This means that we can control the output of the generated image by tuning the latent space.
 
 
 \section{Conclusion}
-
-
-\section{Contribution}
-
 %
 % ---- Bibliography ----
 %
@@ -187,7 +250,30 @@ For a detailed derivation of Jacobians of Planar and Radial flows please refer A
 \bibliographystyle{splncs04}
 \bibliography{ref} 
 
+
+
+
 \appendix
+
+
+\section{Appendix (Contribution)}
+\textbf{Abdul Fatir Ansari}
+\begin{enumerate}
+	\item 
+\end{enumerate}
+
+\textbf{Devamanyu Hazarika}
+\begin{enumerate}
+	\item 
+\end{enumerate}
+
+
+\textbf{Remmy A. M. Zen}
+\begin{enumerate}
+	\item Inverse autoregressive flows subsection.
+	\item Recent advances section.
+	\item 
+\end{enumerate}
 
 \section{Appendix (Abdul Fatir Ansari)}
 
