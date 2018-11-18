@@ -35,15 +35,11 @@ Remmy A. M. Zen}
 %
 \maketitle              % typeset the header of the contribution
 %
-\begin{abstract}
-
-
-\keywords{Normalizing flows \and .}
-\end{abstract}
 %
 %
 %
 \section{Introduction}
+Inference, sampling, and density estimation in deep generative models (DGMs) are important directions of research. Simple distributions (e.g., Gaussian) are often used as likelihood distributions in DGMs. However, the true distribution is often far from this simple distribution which results in issues such as blurry reconstructions in the case of images. Latent variable models such as VAEs often set the variational posterior distribution $q(\mathbf{z}|\mathbf{x})$ to a factorial multivariate Gaussian distribution. Such a simplistic assumption hampers the model in multiple ways. For instance, this does not allow a multi-modal latent space distribution. Normalizing Flows allow transformation of samples from a simple distribution into samples from a complex distribution, whose density can be evaluated analytically, by applying a series of invertible transformations. In this report, we discuss a number of recent works that introduce techniques for improved variational inference and/or density estimation in deep generative models. 
 \section{Background}
 \subsection{Autoencoder}
 An Autoencoder (AE)~\cite{hinton2006reducing} is comprised of two neural networks: 1) The encoder network $f_\phi$ which transforms an input data-point $\mathbf{x} \in \mathbb{R}^d$ into a representation $\mathbf{z} \in \mathbb{R}^p$ where $p < d$ generally; 2) The decoder network $g_\theta$ which attempts to reconstruct $\mathbf{x}$ as $\mathbf{\hat{x}} \in \mathbb{R}^d$ from the representation $\mathbf{z}$. Training proceeds by minimizing the reconstruction error between $\mathbf{x}$ and $\mathbf{\hat{x}}$ and the training objective is given in Eq. (\ref{eq:ae})
@@ -370,6 +366,7 @@ In this project, we have discussed how to transform a simple base distribution t
 	\end{itemize}
 	\item Normalizing flows in PPLs
 	\item Problem Set 1
+	\item Code examples
 \end{enumerate}
 
 \subsection*{Devamanyu Hazarika}
