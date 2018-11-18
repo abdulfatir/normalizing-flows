@@ -10,6 +10,7 @@
 \usepackage{bm}
 \usepackage{amsfonts}
 \usepackage{subfig}
+\usepackage{cleveref}
 \graphicspath{{./imgs/}}
 
 \begin{document}
@@ -207,10 +208,45 @@ where $\bm{\mu}$ and $\bm{\sigma}$ learnt from an Autoregressive neural network 
 Density Estimation techniques take a different approach from Variational Inference (VI) methods to model the complex data distribution. Unlike VI, these methods aim for exact inference, sampling and log-likelihood evaluation. The primary goal in this regime is to find a bijective function $h=f(x)\;,x \in \mathcal{X}$ to map complex data-distribution $p_X(x)$ to density $p_H(f(x))$. Given that $p_H()$ has a simpler density whose likelihood function is analytically known, the overall log-likelihood of the data can be easily calculated. The complex log-likelihood of the data can now be calculated using the change of variables as follows:
 \begin{align}
 \log(p_X(x)) = \log(p_H(f(x))) +
-\log(\lvert \det(\frac{\partial f(x)}{\partial x}) \rvert)
+\log(\lvert \det(\frac{\partial f(x)}{\partial x}) \rvert) \label{eq:log-likelihood}
 \end{align}
 
-\subsubsection{Non-linear Independent Components Estimation}
+\subsubsection{Non-linear Independent Components Estimation} \label{sec:nice}
+
+Non-linear Independent Components Estimation (NICE) \cite{dinh2014nice} is one of the early works adopting normalizing flows in density estimation. This work focuses on transformations $h=f(x)$ that maps the data into a factorized distribution, i.e., the components of $h_d$ are independent. Consequently, the log-likelihood in \cref{eq:log-likelihood} can be written as:
+\begin{align}
+\log(p_X(x)) = \sum_{d=1}^{D}{\log(p_{H_{d}}(f_{d}(x)))} + \log(\lvert \det(\frac{\partial f(x)}{\partial x}) \rvert)
+\end{align}
+where $f(x) = (f_{d}(x))_{d \leq D}$.
+
+This work targets invertible functions whose Jacobians have triangular structure so that calculating the determinant is tractable. In particular, it proposes the family of \textit{coupling layers} that we define below.
+
+\paragraph{Coupling layer:} The coupling layer serves a building block of the transformation proposed in this work. The general coupling layer comprises of two partitions $I_{1}, I_{2}$ of the input dimensions  $\left[ 1, D \right]$, such that $d = \lvert I_{1} \rvert$. The transformation is then defined as:
+
+\begin{align}
+y_{I_{1}} &= x_{I_{1}} \\
+y_{I_{2}} &= g(x_{I_{2}} ; m(x_{I_{1}}))
+\end{align}
+where
+$g: \mathbb{R}^{D-d} \times m(\mathbb{R}^{d}) \rightarrow \mathbb{R}^{D-d}$ is an invertible function. Considering 
+$I_{1} = \left[ 1, d \right]$ and $I_{2} = \left[ d, D \right]$,
+the Jacobian of this function is:
+\begin{align*}
+\frac{\partial y}{\partial x} =
+\begin{bmatrix}
+I_{d} & 0 \\
+\frac{\partial y_{I_{2}}}{\partial x_{I_{1}}} & \frac{\partial y_{I_{2}}}{\partial x_{I_{2}}} 
+\end{bmatrix}
+\end{align*}
+Where $I_{d}$ is the identity matrix of size $d$. That means that
+$\det \frac{\partial y}{\partial x} = \det \frac{\partial y_{I_{2}}}{\partial x_{I_{2}}}$ which evaluates to $1$. 
+The inverse of this transformation can be expressed as:
+\begin{align*}
+x_{I_{1}} &= y_{I_{1}} \\
+x_{I_{2}} &= g^{-1}(y_{I_{2}} ; m(y_{I_{1}}))
+\end{align*}
+It is important to notice that the inverse of coupling function $m()$ is not required, thus allowing it to be modeled as complex non-linear functions. 
+ 
 \subsubsection{Real-valued Non-Volume Preserving} \label{sec:realnvp}
 
 \section{Normalizing Flows in Probabilistic Programming Languages}
