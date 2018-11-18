@@ -301,6 +301,11 @@ x\quad&\text{if } x \geq 0\\
 x = f^{-1}(y) &= \begin{cases}
 y\quad&\text{if } y \geq 0\\
 \alpha^{-1} y\quad&\text{otherwise}
+\end{cases}\\
+\frac{\partial f^{-1}}{\partial y}\Bigg|_{ii} &= 
+\begin{cases}
+1\quad&\text{if } y_i \geq 0\\
+\frac{1}{\alpha}\quad&\text{otherwise}\\
 \end{cases}
 \end{align}
 An example bijector implementation is given in the appendix.
