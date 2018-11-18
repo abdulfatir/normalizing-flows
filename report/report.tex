@@ -280,7 +280,6 @@ This subsequent work (RealNVP) \cite{dinh2016density} is an extension to the pre
 \begin{align}
 y_{1:d} &= x_{1:d}\\
 y_{d+1:D} &= x_{d+1:D} \odot \exp\big(s(x_{1:d})\big) + t(x_{1:d})
-,
 \end{align}
 where $I_1 = [1,d]$ and $I_2 = [(d+1),D]$. Also, $\exp(s(.))$ represents the \textit{scale} and $t(.)$ represents the \textit{shift} operation respectively. The Jacobian of this transformation is also a triangular matrix (derivation has been provided in appendix).
 
@@ -368,7 +367,7 @@ All of the additions mentioned before can be inverted and log-determinant of the
 
 \subsection*{Devamanyu Hazarika}
 \begin{enumerate}
-	\item 
+	\item Density Estimation Techniques
 \end{enumerate}
 
 
@@ -412,6 +411,32 @@ Let $\gamma = (1+\beta h(\alpha,r))$. Using the matrix determinant lemma
 \section{Appendix (Devamanyu Hazarika)}
 
 First, let us derive the Jacobian for the affine coupling law defined in RealNVP:
+
+\begin{align*}
+\frac{\partial \mathbf{y}}{\partial \mathbf{x^T}} &= \begin{bmatrix}
+\frac{\partial y_{1:d}}{\partial x_{1:d}} & \frac{\partial y_{1:d}}{\partial x_{d+1:D}} \\
+\frac{\partial y_{d+1:D}}{\partial x_{1:d}} & \frac{\partial y_{d+1:D}}{\partial x_{d+1:D}} 
+\end{bmatrix}\\
+&= \begin{bmatrix}
+I_{d} & 0 \\
+\frac{\partial y_{d+1:D}}{\partial x_{1:d}} & \frac{\partial \left(x_{d+1:D} \odot \exp\left((s(x_{1:d})\right)) + t(x_{1:d})\right)}{\partial x_{d+1:D}} 
+\end{bmatrix}\\
+&= \begin{bmatrix}
+I_{d} & 0 \\
+\frac{\partial y_{d+1:D}}{\partial x_{1:d}} & diag\left(\,\exp[s(x_{1:d})]\right)
+\end{bmatrix}
+\end{align*}
+
+Thus, the corresponding log determinant is:
+\begin{align*}
+\log\left( \left|\det(\frac{\partial \mathbf{y}}{\partial \mathbf{x^T}})\right|\right) &= \sum_{i=1}^{d}{\log(\exp(s(x_i)))}
+\end{align*}
+which can be calculated in $O(d)$ time.
+
+\paragraph{Discussion:}
+In their results, RealNVP doesn not surpass the state-of-the-art models. But it contains certain advantages over other proposed approaches. Firstly, compared to variational methods, density estimation methods provide tractable and exact log-lkelihood evaluation. This makes the model much more flexible. Secondly, there is no explicit likelihood function required with terms comprising reconstruction loss. This allows the generated images to be sharper compared to other approaches such as variational autoencoders.
+
+When considering the discussed density estimation methods with other models such as VAEs and GANs, one key difference arises in the size of the latent space. RealNVP and similar techniques are able to find meaningful latent dimensions in a space with similar dimensions as the input. In contrast, other methods try to find meaningful latent states which are low dimensional. The former approach presents better expressibility and is thus desirable.
 
 
 \section{Appendix (Remmy A. M. Zen)}
