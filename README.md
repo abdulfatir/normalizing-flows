@@ -9,6 +9,8 @@
 
 ### Variational Inference with Normalizing Flows (Rezende and Mohamed)
 
+The function that planar flow uses doesn't have analytic inverse which makes it unsuitable for direct likelihood estimation using the data. It can work well in VAEs though because inversion isn't required. However, for cases when the analytic target density is available, KL-divergence can be minimized explicitly (excluding constant terms). Following are the results for two complex 2D densities similar to the ones in the paper. The second column shows samples obtained using MCMC (See `notebooks/Metropolis-Hastings.ipynb`). The third and fourth columns show results using planar flows of different lengths (see `notebooks/PlanarFlow-Example1.ipynb` and `notebooks/PlanarFlow-Example2.ipynb`). During the experiments I found that minimizing KL is not always stable and doesn't always reach a good solution (especially for density 2). 
+
 | True Density | Samples (using Metropolis-Hastings) | Samples (using Planar Flow; K = 4) | Samples (using Planar Flow; K = 16) |
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 ![](report/imgs/example1-density.png) |  ![](report/imgs/example1-samples.png) |  ![](report/imgs/example1-k4.png) |  ![](report/imgs/example1-k16.png)
@@ -16,6 +18,6 @@
 
 #### Note
 
-Originally, this repository contained notes and code on normalizing flows which we did as a part of a course project (CS6202 @ NUS). I am also writing a series of blog posts while learning about normalizing flows.
+Originally, this repository contained notes and code on normalizing flows which we did as a part of a course project (CS6202 @ NUS). Some ideas are borrowed from [this repo](https://github.com/ex4sperans/variational-inference-with-normalizing-flows).
 
 
