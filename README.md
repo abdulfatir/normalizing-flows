@@ -15,6 +15,7 @@ The function that planar flow uses doesn't have analytic inverse which makes it 
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 ![](report/imgs/example1-density.png) |  ![](report/imgs/example1-samples.png) |  ![](report/imgs/example1-k4.png) |  ![](report/imgs/example1-k16.png)
 ![](report/imgs/example2-density.png) |  ![](report/imgs/example2-samples.png) |  ![](report/imgs/example2-k4.png) |  ![](report/imgs/example2-k16.png)
+![](report/imgs/example3-density.png) |  ![](report/imgs/example3-samples.png) |  ![](report/imgs/example3-k4.png) |  ![](report/imgs/example3-k16.png)
 
 #### VAE with Planar Flow
 
