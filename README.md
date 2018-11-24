@@ -16,6 +16,19 @@ The function that planar flow uses doesn't have analytic inverse which makes it 
 ![](report/imgs/example1-density.png) |  ![](report/imgs/example1-samples.png) |  ![](report/imgs/example1-k4.png) |  ![](report/imgs/example1-k16.png)
 ![](report/imgs/example2-density.png) |  ![](report/imgs/example2-samples.png) |  ![](report/imgs/example2-k4.png) |  ![](report/imgs/example2-k16.png)
 
+#### VAE with Planar Flow
+
+Following are the results for vanilla VAE and VAE with planar flows. Note that these results are just for one random run. 
+
+| Model | Latent Space Size | Test Lower Bound | Test Reconstruction Error | Latent Space |
+:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
+VAE |  2 | -138.5  | 131.3  |  <img src="report/imgs/vae-latentspace.png" alt="drawing" width="300px;"/>
+VAE |  20 | -98.1  | 75.9  |  --
+VAE-PF (K=16) |  2 | -136.0  | 130.6  |  <img src="report/imgs/vaepf16-latentspace.png" alt="drawing" width="300px;"/>
+VAE-PF (K=16) |  20 | -79.4  | 77.7  |  --
+
+
+
 #### Note
 
 Originally, this repository contained notes and code on normalizing flows which we did as a part of a course project (CS6202 @ NUS). Some ideas are borrowed from [this repo](https://github.com/ex4sperans/variational-inference-with-normalizing-flows).
