@@ -1,5 +1,7 @@
 # Normalizing Flows
 
+**Note**: There are some bugs in the implementation of VAE+PF. For an updated Pytorch implementation, please check: [abdulfatir/planar-flow-pytorch](https://github.com/abdulfatir/planar-flow-pytorch).
+
 ### Accompanying documentation
 
 1. [Normalizing Flows: Planar and Radial Flows](http://abdulfatir.com/Normalizing-Flows-Part-1/)
@@ -19,14 +21,9 @@ The function that planar flow uses doesn't have analytic inverse which makes it 
 
 #### VAE with Planar Flow
 
-Following are the results for vanilla VAE and VAE with planar flows. Note that these results are just for one random run. 
+**[REMOVED]**
 
-| Model | Latent Space Size | Test Lower Bound | Test Reconstruction Error | Latent Space |
-:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
-VAE |  2 | -138.5  | 131.3  |  <img src="report/imgs/vae-latentspace.png" alt="drawing" width="300px;"/>
-VAE |  20 | -98.1  | 75.9  |  --
-VAE-PF (K=16) |  2 | -136.0  | 130.6  |  <img src="report/imgs/vaepf16-latentspace.png" alt="drawing" width="300px;"/>
-VAE-PF (K=16) |  20 | -79.4  | 77.7  |  --
+There are some bugs in the implementation of VAE+PF. For an updated Pytorch implementation, please check: [abdulfatir/planar-flow-pytorch](https://github.com/abdulfatir/planar-flow-pytorch).
 
 
 
